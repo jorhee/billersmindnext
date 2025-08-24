@@ -1,24 +1,13 @@
 // src/app/page.js
 
-'use client';  // Mark this component as a Client Component
 
-import Head from "next/head";
+import Header from "../components/Header";
 
-
-const Home = () => {
-  const handleGetStartedClick = () => {
-    alert('Start Your Billing Journey with Billers Mind!');
-  };
+export default function Home() {
 
   return (
     <div>
-      <Head>
-        <title>Billers Mind - Cloud Billing</title>
-        <meta name="description" content="Billers Mind - Healthcare Billing Solution" />
-      </Head>
-
-      
-
+      <Header />
       <main>
       {/*SideBar*/}
       {/*Feed*/}
@@ -28,4 +17,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+

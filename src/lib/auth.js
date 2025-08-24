@@ -1,45 +1,41 @@
+// /lib/auth.js
+
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
+import { MongoClient } from "mongodb";
+import bcrypt from "bcrypt";
+import connectMongo from "@/lib/mongodb";
+import User from "@/models/User";
+
+const clientPromise = connectMongo();
 
 export const authOptions = {
   providers: [
-    // Using Google Auth (you need to set up Google OAuth credentials)
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    Providers.Facebook({
-    	clientId: process.env.FACEBOOK_CLIENT_ID,
-    	clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-    })
-
-    // Using a Credentials Provider (username/password authentication)
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        email: { label: "Email", type: "text", placeholder: "Email" },
+        password: { label: "Password", type: "password", placeholder: "Password" }
       },
       async authorize(credentials) {
-        const { email, password } = credentials;
+        try {
+          await connectMongo();
 
-        if (email === "test@example.com" && password === "password") {
-          return { id: 1, name: "Test User", email };
+          const user = await User.findOne({ email: credentials.email });
+
+          if (user && await bcrypt.compare(credentials.password, user.password)) {
+            return user;
+          }
+
+          throw new Error("Invalid email or password");
+        } catch (error) {
+          console.error("Authorization error:", error.message);
+          return null;
         }
-
-        return null;
-      },
-    }),
+      }
+    })
   ],
-
-  session: {
-    strategy: "jwt",
-  },
-
-  pages: {
-    signIn: "/auth/signin",
-  },
-  
-  secret: process.env.NEXTAUTH_SECRET,
+  adapter: MongoDBAdapter(await clientPromise),
+  secret: process.env.NEXTAUTH_SECRET
 };

@@ -1,5 +1,6 @@
 import HeaderIcon from './HeaderIcon';
 import Image from "next/image";
+import LoginButton from "./LoginButton";
 
 import {
     HomeIcon,
@@ -33,7 +34,7 @@ const Header = () => {
             alt="BM Favicon"
             width={40}
             height={40}
-            layout="fixed"
+            style="fixed"
             />
             <div className='flex ml-2 items-center rounded-full bg-gray-100 p-2'>
               <MagnifyingGlassIcon  className="h-6 text-gray-900" />
@@ -63,7 +64,9 @@ const Header = () => {
         <ChatBubbleLeftEllipsisIcon className='icon' />
         <BellIcon className='icon' />
         <ChevronDownIcon className='icon' />
+
         </div>
+        <LoginButton />
 
 
       </div>
